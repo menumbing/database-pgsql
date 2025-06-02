@@ -48,14 +48,17 @@ class PostgresSqlSwooleExtConnector implements ConnectorInterface
     {
         $connection = new PostgreSQL();
 
-        $result = $connection->connect(sprintf(
-            'host=%s port=%s dbname=%s user=%s password=%s',
-            $config['host'],
-            $config['port'],
-            $config['database'],
-            $config['username'],
-            $config['password']
-        ));
+        $result = $connection->connect(
+            sprintf(
+                'host=%s port=%s dbname=%s user=%s password=%s',
+                $config['host'],
+                $config['port'],
+                $config['database'],
+                $config['username'],
+                $config['password']
+            ),
+            $config['pool']['connect_timeout']
+        );
 
         if ($result === false) {
             throw new Exception($connection->error ?? 'Create connection failed, Please check the database configuration.');
@@ -67,11 +70,11 @@ class PostgresSqlSwooleExtConnector implements ConnectorInterface
     /**
      * Set the connection character set and collation.
      *
-     * @param array $config
+     * @param  array  $config
      */
     protected function configureEncoding(PostgreSQL $connection, $config)
     {
-        if (! isset($config['charset'])) {
+        if (!isset($config['charset'])) {
             return;
         }
 
@@ -92,7 +95,7 @@ class PostgresSqlSwooleExtConnector implements ConnectorInterface
     /**
      * Set the schema on the connection.
      *
-     * @param array $config
+     * @param  array  $config
      */
     protected function configureSchema(PostgreSQL $connection, $config)
     {
@@ -105,23 +108,24 @@ class PostgresSqlSwooleExtConnector implements ConnectorInterface
     /**
      * Format the schema for the DSN.
      *
-     * @param array|string $schema
+     * @param  array|string  $schema
+     *
      * @return string
      */
     protected function formatSchema($schema)
     {
         if (is_array($schema)) {
-            return '"' . implode('", "', $schema) . '"';
+            return '"'.implode('", "', $schema).'"';
         }
 
-        return '"' . $schema . '"';
+        return '"'.$schema.'"';
     }
 
     /**
      * Set the schema on the connection.
      *
-     * @param array $config
-     * @param mixed $connection
+     * @param  array  $config
+     * @param  mixed  $connection
      */
     protected function configureApplicationName($connection, $config)
     {
@@ -133,11 +137,12 @@ class PostgresSqlSwooleExtConnector implements ConnectorInterface
 
     /**
      * Configure the synchronous_commit setting.
-     * @param mixed $connection
+     *
+     * @param  mixed  $connection
      */
     protected function configureSynchronousCommit($connection, array $config)
     {
-        if (! isset($config['synchronous_commit'])) {
+        if (!isset($config['synchronous_commit'])) {
             return;
         }
         $connection->prepare("set synchronous_commit to '{$config['synchronous_commit']}'")->execute();

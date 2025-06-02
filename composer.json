@@ -1,5 +1,5 @@
 {
-    "name": "hyperf/database-pgsql",
+    "name": "menumbing/database-pgsql",
     "description": "A pgsql handler for hyperf/database.",
     "license": "MIT",
     "type": "library",
